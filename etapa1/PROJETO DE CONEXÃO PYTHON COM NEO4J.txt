@@ -1,0 +1,92 @@
+PROJETO DE CONEXÃO PYTHON COM NEO4J
+===================================
+
+AUTORES
+-------------------------------------
+Djeisson, Fernando, Breno e Bernardo Caciamani
+Disciplina: Banco de Dados 2
+Universidade: Unochapecó
+Data: Novembro de 2025
+
+
+Objetivo:
+---------
+Este projeto tem como objetivo demonstrar como realizar a conexão entre o Python e o banco de dados gráfico Neo4j, utilizando a biblioteca oficial "neo4j".
+
+O ambiente foi configurado utilizando um ambiente virtual (venv), e as dependências foram instaladas através do comando:
+
+    pip install neo4j
+
+-------------------------------------
+ETAPAS DO PROJETO
+-------------------------------------
+1. Instalação do Python e criação do diretório do projeto.
+2. Criação e ativação de um ambiente virtual (venv).
+3. Instalação da biblioteca 'neo4j'.
+4. Inicialização da instância do banco de dados Neo4j.
+5. Criação do script Python e teste de conexão com o banco.
+6. Implementação de consultas utilizando a classe Driver do Neo4j.
+
+-------------------------------------
+PRINCIPAIS MÉTODOS DA CLASSE DRIVER (NEO4J PYTHON DRIVER)
+-------------------------------------
+
+1) driver.session()
+   Cria uma sessão para executar consultas Cypher.
+   Exemplo:
+       with driver.session() as session:
+           result = session.run("MATCH (n) RETURN n LIMIT 3")
+           for record in result:
+               print(record)
+
+2) driver.verify_connectivity()
+   Verifica se o driver consegue se conectar corretamente ao banco.
+   Exemplo:
+       driver.verify_connectivity()
+       print("Conexão estabelecida com sucesso!")
+
+3) driver.execute_query()
+   Executa uma consulta diretamente, sem a necessidade de criar uma sessão manual.
+   Exemplo:
+       records, summary, keys = driver.execute_query(
+           "RETURN 'Olá do Neo4j!' AS mensagem"
+       )
+       for record in records:
+           print(record["mensagem"])
+
+4) driver.get_server_info()
+   Obtém informações sobre o servidor conectado.
+   Exemplo:
+       info = driver.get_server_info()
+       print("Servidor conectado:", info)
+
+5) driver.close()
+   Fecha a conexão com o banco de dados.
+   Exemplo:
+       driver.close()
+       print("Conexão encerrada.")
+
+-------------------------------------
+EXEMPLO DE EXECUÇÃO
+-------------------------------------
+✅ Conexão verificada com sucesso!
+🧩 Servidor: Neo4j Kernel, versão: 2025.09.0, edição: enterprise
+🔹 Resultados da query com session.run():
+<Record n=<Node labels={'Pessoa'} properties={'nome': 'Paulo', 'idade': 34}>>
+💬 Resultado de execute_query():
+Olá do Neo4j!
+🔒 Conexão encerrada com sucesso.
+
+-------------------------------------
+REFERÊNCIA AO CONTEÚDO GERADO POR IA
+-------------------------------------
+Parte do conteúdo explicativo sobre os métodos da classe Driver foi gerada com o auxílio da Inteligência Artificial ChatGPT (GPT-5), da OpenAI, em 11/11/2025.
+
+Referência (formato ABNT adaptado):
+OPENAI. Métodos da classe Driver na biblioteca Neo4j para Python.
+Gerado por ChatGPT (GPT-5), 11 nov. 2025.
+Disponível em: https://chat.openai.com
+Acesso em: 11 nov. 2025.
+
+-------------------------------------
+
