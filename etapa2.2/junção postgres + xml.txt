@@ -1,0 +1,62 @@
+import psycopg2
+import xml.etree.ElementTree as ET
+
+# --- CONFIGURAÇÃO ---
+PG_HOST = "localhost" 
+PG_PORT = "5432"
+PG_DATABASE = "seu_nome_do_banco" 
+PG_USER = "postgres" 
+PG_PASSWORD = "sua_senha_postgres" 
+XML_FILE = 'fornecimento.xml'
+# --------------------
+
+def join_minimal():
+    
+    # 1. Extração PG
+    pecas_pg = {}
+    try:
+        with psycopg2.connect(host=PG_HOST, port=PG_PORT, database=PG_DATABASE, user=PG_USER, password=PG_PASSWORD) as conn:
+            with conn.cursor() as cursor:
+                cursor.execute("SELECT cod_peca, pnome, cor, peso, cdade FROM Peca;")
+                pecas_pg = {int(r[0]): {'nome': r[1], 'cor': r[2], 'peso': r[3], 'cidade': r[4]} for r in cursor.fetchall()}
+    except:
+        return
+
+    # 2. Extração XML
+    fornecimentos_xml = []
+    try:
+        root = ET.parse(XML_FILE).getroot()
+        fornecimentos_xml = [
+            {'cf': f.find('Cod_Fornec').text, 'cp': int(f.find('Cod_Peca').text), 'cj': f.find('Cod_Proj').text, 'qtd': int(f.find('Quantidade').text)}
+            for f in root.findall('fornecimento')
+        ]
+    except:
+        return
+
+    # 3. Junção e Impressão
+    print("="*125)
+    print(f"{'INTEGRAÇÃO DE DADOS (PG + XML)':^125}")
+    print("="*125)
+    
+    header = (f"{'ID PEÇA':<8} | {'NOME (PG)':<15} | {'COR (PG)':<12} | {'PESO (PG)':<12} | "
+              f"{'CIDADE (PG)':<18} | {'FORN. (XML)':<12} | {'PROJ. (XML)':<12} | {'QTD (XML)':<10}")
+    print(header)
+    print("-" * 125)
+
+    for f in fornecimentos_xml:
+        cod_peca = f['cp']
+        peca_info = pecas_pg.get(cod_peca)
+        
+        pec_nome, pec_cor, pec_peso, pec_cidade = ('NÃO ENCONTRADA', 'N/A', 'N/A', 'N/A')
+        if peca_info:
+            pec_nome, pec_cor, pec_peso, pec_cidade = peca_info['nome'], peca_info['cor'], peca_info['peso'], peca_info['cidade']
+        
+        peso_str = f"{pec_peso:.2f}" if isinstance(pec_peso, (float, int)) else pec_peso
+        
+        print(f"{cod_peca:<8} | {pec_nome:<15} | {pec_cor:<12} | {peso_str:<12} | "
+              f"{pec_cidade:<18} | {f['cf']:<12} | {f['cj']:<12} | {f['qtd']:<10}")
+        
+    print("="*125)
+
+if __name__ == "__main__":
+    join_minimal()
